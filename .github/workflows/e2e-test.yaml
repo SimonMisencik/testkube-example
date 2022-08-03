@@ -27,7 +27,7 @@ jobs:
       - name: Install helm-chart for e2e tests
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm install nginx bitnami/nginx --wait
+          helm install nginx bitnami/nginx
 
       - name: Install cert-manager helm-chart
         run: |
