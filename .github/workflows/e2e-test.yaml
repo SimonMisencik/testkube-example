@@ -54,11 +54,19 @@ jobs:
       #   with:
       #     command: install
 
+      - name: Install cert-manager helm-chart
+        run: |
+          kubectl create namespace cert-manager
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.crds.yaml
+          helm repo add jetstack https://charts.jetstack.io
+          helm install my-release --namespace cert-manager --version v1.9.1 jetstack/cert-manager
+
       # Install testkube
       - name: Install testkube
         id: install_testkube
         run: |
-          kubectl testkube install
+          helm repo add testkube https://kubeshop.github.io/helm-charts
+          helm install --namespace default testkube testkube/testkube --wait
 
       # Creating test
       - name: Create test
