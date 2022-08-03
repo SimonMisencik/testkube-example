@@ -31,7 +31,7 @@ jobs:
 
       # Install testkube
       - name: Install testkube
-        id: create_test
+        id: install_testkube
         uses: kubeshop/testkube-docker-action@v1
         with:
           command: install
