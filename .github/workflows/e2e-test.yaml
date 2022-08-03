@@ -29,6 +29,13 @@ jobs:
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm install my-release bitnami/nginx
 
+      # Install testkube
+      - name: Create test
+        id: create_test
+        uses: kubeshop/testkube-docker-action@v1
+        with:
+          command: install
+
       # Creating test
       - name: Create test
         id: create_test
