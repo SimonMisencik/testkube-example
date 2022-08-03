@@ -27,10 +27,16 @@ jobs:
       - name: Install helm-chart for e2e tests
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo add jetstack https://charts.jetstack.io
-          helm repo add testkube https://kubeshop.github.io/helm-charts
           helm install nginx bitnami/nginx --wait
+
+      - name: Install cert-manager helm-chart
+        run: |
+          helm repo add jetstack https://charts.jetstack.io
           helm install cert-manager jetstack/cert-manager --wait
+
+      - name: Install testkube helm-chart
+        run: |
+          helm repo add testkube https://kubeshop.github.io/helm-charts
           helm install --namespace default testkube testkube/testkube --wait
 
       # # Install testkube
