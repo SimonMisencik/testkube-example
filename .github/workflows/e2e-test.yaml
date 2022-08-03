@@ -28,13 +28,16 @@ jobs:
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm install my-release bitnami/nginx
+          helm repo add testkube https://kubeshop.github.io/helm-charts
+          helm install --namespace default testkube testkube/testkube
 
-      # Install testkube
-      - name: Install testkube
-        id: install_testkube
-        uses: kubeshop/testkube-docker-action@v1
-        with:
-          command: install
+      # # Install testkube
+      # Doesn't work
+      # - name: Install testkube
+      #   id: install_testkube
+      #   uses: kubeshop/testkube-docker-action@v1
+      #   with:
+      #     command: install
 
       # Creating test
       - name: Create test
