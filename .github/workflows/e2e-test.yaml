@@ -30,7 +30,7 @@ jobs:
           helm install my-release bitnami/nginx
 
       # Install testkube
-      - name: Create test
+      - name: Install testkube
         id: create_test
         uses: kubeshop/testkube-docker-action@v1
         with:
