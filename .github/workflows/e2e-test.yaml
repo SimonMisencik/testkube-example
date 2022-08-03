@@ -49,10 +49,17 @@ jobs:
       #   with:
       #     command: install
 
+      # Install testkube
+      - name: Install testkube
+        id: install_testkube
+        run: |
+          kubectl testkube install
+
       # Creating test
       - name: Create test
         id: create_test
         run: |
+          kubectl testkube install
           kubectl testkube create test --git-uri https://github.com/kubeshop/testkube-executor-cypress.git --git-branch main --git-path examples --name kubeshop-cypress --type cypress/project
 
 
