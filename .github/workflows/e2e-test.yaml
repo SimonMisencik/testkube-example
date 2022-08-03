@@ -38,6 +38,8 @@ jobs:
           resource: test
           namespace: testkube
           parameters: "--git-uri https://github.com/kubeshop/testkube-executor-cypress.git --git-branch main --git-path examples --name kubeshop-cypress --type cypress/project"
+        env:
+          KUBERNETES_MASTER: ~/.kube/config
 
       # Running test
       - name: Run test
@@ -47,3 +49,5 @@ jobs:
           command: run
           resource: test
           parameters: "kubeshop-cypress"
+        env:
+          KUBERNETES_MASTER: ~/.kube/config
