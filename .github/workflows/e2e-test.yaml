@@ -1,0 +1,50 @@
+name: E2E tests
+
+on:
+  pull_request
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Helm tool installer
+        uses: Azure/setup-helm@v3.3
+        with:
+          version: v3.8.1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.2.0
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Install helm-chart for e2e tests
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm install my-release bitnami/nginx
+
+      # Creating test
+      - name: Create test
+        id: create_test
+        uses: kubeshop/testkube-docker-action@v1
+        with:
+          command: create
+          resource: test
+          namespace: testkube
+          parameters: "--git-uri https://github.com/kubeshop/testkube-executor-cypress.git --git-branch main --git-path examples --name kubeshop-cypress --type cypress/project"
+
+      # Running test
+      - name: Run test
+        id: run_test
+        uses: kubeshop/testkube-docker-action@v1
+        with:
+          command: run
+          resource: test
+          parameters: "kubeshop-cypress"
