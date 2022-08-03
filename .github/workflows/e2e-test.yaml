@@ -36,24 +36,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y testkube
 
-      # - name: Install cert-manager helm-chart
-      #   run: |
-      #     helm repo add jetstack https://charts.jetstack.io
-      #     helm install cert-manager jetstack/cert-manager --wait
-
-      # - name: Install testkube helm-chart
-      #   run: |
-      #     helm repo add testkube https://kubeshop.github.io/helm-charts
-      #     helm install --namespace default testkube testkube/testkube --wait
-
-      # # Install testkube
-      # Doesn't work
-      # - name: Install testkube
-      #   id: install_testkube
-      #   uses: kubeshop/testkube-docker-action@v1
-      #   with:
-      #     command: install
-
       - name: Install cert-manager helm-chart
         run: |
           kubectl create namespace cert-manager
@@ -66,14 +48,13 @@ jobs:
         id: install_testkube
         run: |
           helm repo add testkube https://kubeshop.github.io/helm-charts
-          helm install --create-namespace my-testkube testkube/testkube
+          helm install --create-namespace testkube testkube/testkube --wait
 
       # Creating test
       - name: Create test
         id: create_test
         run: |
           kubectl testkube create test --git-uri https://github.com/kubeshop/testkube-executor-cypress.git --git-branch main --git-path examples --name kubeshop-cypress --type cypress/project
-
 
       #- name: Create test
       #  id: create_test
