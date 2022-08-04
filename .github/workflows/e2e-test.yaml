@@ -27,7 +27,7 @@ jobs:
       - name: Install helm-chart for e2e tests
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm install nginx bitnami/nginx
+          helm install --create-namespace --namespace testkube nginx bitnami/nginx
 
       - name: Install testkube plugin
         run: |
@@ -48,38 +48,16 @@ jobs:
         id: install_testkube
         run: |
           helm repo add testkube https://kubeshop.github.io/helm-charts
-          helm install --create-namespace --namespace testkube testkube testkube/testkube --wait
+          helm install --namespace testkube testkube testkube/testkube --wait
 
       # Creating test
       - name: Create test
         id: create_test
         run: |
-          kubectl testkube create test --git-uri https://github.com/kubeshop/testkube-executor-cypress.git --git-branch main --git-path examples --name kubeshop-cypress --type cypress/project
-
-      #- name: Create test
-      #  id: create_test
-      #  uses: kubeshop/testkube-docker-action@v1
-      #  with:
-      #    command: create
-      #    resource: test
-      #    namespace: testkube
-      #    parameters: "--git-uri https://github.com/kubeshop/testkube-executor-cypress.git --git-branch main --git-path examples --name kubeshop-cypress --type cypress/project"
-      #  env:
-      #    KUBERNETES_MASTER: ~/.kube/config
+          kubectl testkube create test --git-uri https://github.com/SimonMisencik/testkube-example-test.git --git-branch main --name example-cypress --type cypress/project
 
       # Running test
       - name: Run test
         id: run_test
         run: |
-          kubectl testkube run test kubeshop-cypress -f
-
-      # Running test
-      #- name: Run test
-      #  id: run_test
-      #  uses: kubeshop/testkube-docker-action@v1
-      #  with:
-      #    command: run
-      #    resource: test
-      #    parameters: "kubeshop-cypress"
-      #  env:
-      #    KUBERNETES_MASTER: ~/.kube/config
+          kubectl testkube run test example-cypress -f
