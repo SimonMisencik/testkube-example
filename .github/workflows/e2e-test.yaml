@@ -49,6 +49,12 @@ jobs:
         run: |
           helm repo add testkube https://kubeshop.github.io/helm-charts
           helm install --namespace testkube testkube testkube/testkube --wait
+          
+      # Install testkube
+      - name: Get nginx service
+        id: service_nginx
+        run: |
+          kubectl describe service nginx -n testkube
 
       # Creating test
       - name: Create test
