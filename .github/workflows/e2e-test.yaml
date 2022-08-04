@@ -1,0 +1,69 @@
+name: E2E tests
+
+on:
+  pull_request
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Helm tool installer
+        uses: Azure/setup-helm@v3.3
+        with:
+          version: v3.8.1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.2.0
+
+      - name: Install helm-chart for e2e tests
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm install --create-namespace --namespace testkube nginx bitnami/nginx
+
+      - name: Install testkube plugin
+        run: |
+          wget -qO - https://repo.testkube.io/key.pub | sudo apt-key add -
+          echo "deb https://repo.testkube.io/linux linux main" | sudo tee -a /etc/apt/sources.list
+          sudo apt-get update
+          sudo apt-get install -y testkube
+
+      - name: Install cert-manager helm-chart
+        run: |
+          kubectl create namespace cert-manager
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.crds.yaml
+          helm repo add jetstack https://charts.jetstack.io
+          helm install my-release --namespace cert-manager --version v1.9.1 jetstack/cert-manager
+
+      # Install testkube
+      - name: Install testkube
+        id: install_testkube
+        run: |
+          helm repo add testkube https://kubeshop.github.io/helm-charts
+          helm install --namespace testkube testkube testkube/testkube --wait
+          
+      # Install testkube
+      - name: Get nginx service
+        id: service_nginx
+        run: |
+          kubectl describe service nginx -n testkube
+
+      # Creating test
+      - name: Create test
+        id: create_test
+        run: |
+          kubectl testkube create test --git-uri https://github.com/SimonMisencik/testkube-example-test.git --git-branch main --name example-cypress --type cypress/project
+
+      # Running test
+      - name: Run test
+        id: run_test
+        run: |
+          kubectl testkube run test example-cypress -f
